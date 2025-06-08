@@ -118,7 +118,7 @@ defmodule HttpParserTest do
     assert(status == :body)
     assert(headers["authorization"] == "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
     assert(headers["content-length"] == "123")
-    assert(rd == "remaining-request")
+    assert(rd == "")
   end
 
   test "test body" do
@@ -133,6 +133,6 @@ defmodule HttpParserTest do
         ~S'{"user":"john", "age":21}'
 
     parser = HttpParser.parse(parser, request)
-    IO.inspect(parser)
+    assert(parser.body == ~S'{"user":"john", "age":21}')
   end
 end

@@ -64,19 +64,25 @@ defmodule HttpParser do
 
   defp parse_headers(%HttpParser{} = state, data) do
     {h_state, lines, buffer} = HttpHeaders.parse_lines(data)
+    headers = HttpHeaders.parse_headers(lines)
+    # {:error, :invalid_header}
 
-    case h_state do
-      :ok ->
-        headers = HttpHeaders.parse_headers(lines)
-        merged = merge_headers(state.headers, headers)
-        state = %{state | status: :body, headers: merged, buffer: buffer}
-        parse(state, <<>>)
+    case headers do
+      {:error, :invalid_header} ->
+        %{state | status: :error, error: :invalid_header}
 
       _ ->
-        headers = HttpHeaders.parse_headers(lines)
         merged = merge_headers(state.headers, headers)
-        state = %{state | status: :headers, headers: merged, buffer: buffer}
-        state
+
+        case h_state do
+          :ok ->
+            state = %{state | status: :body, headers: merged, buffer: buffer}
+            parse(state, <<>>)
+
+          _ ->
+            state = %{state | status: :headers, headers: merged, buffer: buffer}
+            state
+        end
     end
   end
 
