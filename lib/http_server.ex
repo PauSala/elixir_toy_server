@@ -35,7 +35,7 @@ defmodule HttpServer do
 
         case parser.status do
           :end ->
-            IO.inspect(parser)
+            # IO.inspect(parser)
             write_line(default_ok_response(), socket)
 
           :error ->
