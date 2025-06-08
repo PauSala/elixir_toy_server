@@ -1,3 +1,3 @@
 # HttpServer
 
-An http parser for learning purposes
+An http server for learning purposes
