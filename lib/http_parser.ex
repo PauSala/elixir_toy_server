@@ -65,7 +65,6 @@ defmodule HttpParser do
   defp parse_headers(%HttpParser{} = state, data) do
     {h_state, lines, buffer} = HttpHeaders.parse_lines(data)
     headers = HttpHeaders.parse_headers(lines)
-    # {:error, :invalid_header}
 
     case headers do
       {:error, :invalid_header} ->
