@@ -69,7 +69,7 @@ defmodule HttpServer do
   end
 
   defp default_error_response() do
-    body = "Oops!"
+    body = "Oops!\n"
 
     "HTTP/1.1 500 Internal Server Error\r\n" <>
       "Content-Type: text/plain\r\n" <>
