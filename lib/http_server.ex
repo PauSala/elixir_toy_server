@@ -24,31 +24,45 @@ defmodule HttpServer do
   end
 
   defp serve(socket) do
-    req_parser = HttpParser.new()
-    read(socket, req_parser)
+    read_loop(socket)
   end
 
-  defp read(socket, parser) do
+  defp read_loop(socket) do
+    req_parser = HttpParser.new()
+
+    case do_read(socket, req_parser) do
+      {:ok, _} ->
+        write_line(default_ok_response(), socket)
+        read_loop(socket)
+
+      {:error, reason} ->
+        IO.puts(reason)
+        :closed
+    end
+  end
+
+  defp do_read(socket, parser) do
     case :gen_tcp.recv(socket, 0) do
       {:ok, data} ->
+        IO.puts(data)
         parser = HttpParser.parse(parser, data)
 
         case parser.status do
           :end ->
-            # IO.inspect(parser)
-            write_line(default_ok_response(), socket)
+            {:ok, parser}
 
           :error ->
             IO.puts(parser.error)
             write_line(default_error_response(), socket)
+            {:error, :parser_error}
 
           _ ->
-            read(socket, parser)
+            do_read(socket, parser)
         end
 
       {:error, :closed} ->
         IO.puts("Client closed the connection")
-        :closed
+        {:error, :closed}
 
       {:error, reason} ->
         IO.puts("Socket error: #{inspect(reason)}")
