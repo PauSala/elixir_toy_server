@@ -7,7 +7,6 @@ defmodule HttpParser do
             request_line: HttpRequest,
             headers: %{},
             body: <<>>,
-            parsed_len: 0,
             content_len: nil,
             buffer: <<>>,
             ended: false,

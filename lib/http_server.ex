@@ -44,11 +44,11 @@ defmodule HttpServer do
   defp do_read(socket, parser) do
     case :gen_tcp.recv(socket, 0) do
       {:ok, data} ->
-        IO.puts(data)
         parser = HttpParser.parse(parser, data)
 
         case parser.status do
           :end ->
+            IO.inspect(parser)
             {:ok, parser}
 
           :error ->
